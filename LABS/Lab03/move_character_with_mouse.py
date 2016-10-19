@@ -12,27 +12,17 @@ def handle_events():
             if event.key==SDLK_ESCAPE:
                 running=False
             elif event.key==SDLK_a:
-                if radius>=300:
-                    radius=radius
-                else:
-                    radius+=20
+                radius = min(radius+10,300)
             elif event.key==SDLK_d:
-                if radius<=20:
-                    radius=radius
-                else:
-                    radius-=20
+                radius=max(radius-10,20)
             elif event.key==SDLK_LEFT:
-                if x >= 0:
-                    x-=20
+                x=max(x-20,0)
             elif event.key==SDLK_RIGHT:
-                if x<=800:
-                    x+=20
+                x=min(x+20,800)
             elif event.key==SDLK_UP:
-                if y<=600:
-                    y+=20
+                y=min(y+20,600)
             elif event.key==SDLK_DOWN:
-                if y>=0:
-                    y-=20
+                y=max(y-20,0)
         elif event.type==SDL_MOUSEBUTTONDOWN:
                 x, y= event.x, 600-event.y
 

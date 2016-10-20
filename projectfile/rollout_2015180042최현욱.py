@@ -1,8 +1,6 @@
 from pico2d import *
 import Uishowcase
-#import terrain
 
-import math
 
 global unlock_weapon
 
@@ -16,7 +14,10 @@ global unlock_weapon
 class player:
     def __init__(self):
         self.jumpable=True#prevent multiple jump
-        self.x,self.y=0,107#좌표
+
+
+        self.x=0
+        self.y=107#좌표
         self.watch=1#looking direction
         self.step=0#0=stop,1=jumpup,2=jumpdown
         self.jmax=17#jumpmaxheight
@@ -25,11 +26,16 @@ class player:
         self.tick=[0,0,0,0,0,0,0,0]#타격 판정. 머리와 몸통 순서로 좌상우하
         self.framex,self.framey=0,0#프레임.
         self.movecheck=False#키로 인한 좌표변화의 표현
-        self.img=load_image('movingbot.png')#로드할 이미지
+        self.img=load_image('movingbot.png')#로드할 이미지d
 
 
 
     def update(self):
+
+        global x,y,watch
+        x=self.x
+        y=self.y
+        watch=self.watch
         if self.movecheck==True:#이동중 애니메이션 표시
             if self.watch==1:#왼쪽 볼 시
                 self.framex=0
@@ -37,7 +43,6 @@ class player:
                 if self.framey == 8:
                     self.framey -=1
                     self.tick = [X-45,Y+44,X+30,Y + 9,X-21,Y+6,X+21,Y - 57]
-                if terrain.stuck==False:
                     self.x-=10
             elif self.watch==2:
                 self.framex=1
@@ -45,7 +50,6 @@ class player:
                 if self.framey == 8:
                     self.framey -= 1
                     self.tick = [X-30,Y+44,X+45, Y + 30,X-21,Y+6,X+21,Y - 57]
-                if terrain.stuck == False:
                     self.x+=10
         elif self.movecheck==False:#정지중 애니메이션 표시
             if self.watch==1:
@@ -84,6 +88,8 @@ class player:
 
 
 
+
+
     def draw(self):
         self.img.clip_draw(self.framex*100,1116-(124*(self.framey+1)),100,124,self.x,self.y)
 
@@ -102,12 +108,12 @@ class player:
 #이벤트 핸들러
 def handle_events():
     global running
-
+    global x,y
     global mx, my  # 마우스좌표
 
     events = get_events()
     for event in events:
-        global DofM
+
         if event.type == SDL_QUIT:
             running = False
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
@@ -142,13 +148,45 @@ def handle_events():
 
         elif event.type == SDL_MOUSEMOTION:
             mx, my = event.x, 600 - event.y
+        if event.type==SDL_MOUSEBUTTONDOWN:
+            if event.button==SDL_BUTTON_LEFT:
+                disk.shooting=True
+            elif event.button==SDL_BUTTON_RIGHT:
+                disk.activate=True
 
 
+class BULLET():  # 추후수정 필요
+    def __init__(self):
+        self.pivx, self.pivy = 0, 0
+        self.shooting = False
+        self.activate=False
+        self.kind = 0  # kind of disk
+        self.dis = load_image('discs.png')
+        self.actiontime=0
 
 
+    def update(self):
+        global blast
+        blast=self.activate
+        if disk.activate==False:
+            if self.shooting == True:
+                if watch == 2:
+                    self.pivx += 12
+                elif watch == 1:
+                    self.pivx -= 12
 
+            elif self.shooting == False:
+                self.pivx = x
+                self.pivy = y
+            if self.pivx >= 800 or self.pivx <= 0:
+                self.shooting = False
+        elif disk.activate==True:
+            self.actiontime+=1
+            if self.actiontime==300:
+                self.activate=False
 
-
+    def draw(self):
+        self.dis.clip_draw(0, (self.kind + 1) * 21, 21, 21, self.pivx, self.pivy)
 
 
 #초기화 구역
@@ -157,9 +195,9 @@ global X,Y
 open_canvas()
 pl = player()
 ui=Uishowcase.UI()
-#mapwalk=terrain.pannel()
+disk=BULLET()
 
-unlock_weapon=1
+
 
 running=True
 #게임 루프 구간
@@ -168,11 +206,11 @@ while running:
     handle_events()
     clear_canvas()
     pl.update()
-
+    disk.update()
 
     ui.draw()
     pl.draw()
-
+    disk.draw()
 
 
     update_canvas()

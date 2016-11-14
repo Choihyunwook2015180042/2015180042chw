@@ -1,0 +1,16 @@
+¿ÞÂÊ Á¤Áö
+                if self.framey == 8:
+                    self.framey =0
+                else:
+                    self.framey = self.framey + 1
+¿ÞÂÊ ÀÌµ¿(À°»ó)
+		self.framex=0
+                self.framey = self.framey + 1
+                if self.framey == 9:
+                    self.framey -= 1
+¿ÞÂÊ µµ¾à
+		self.framex=300
+                if self.framey == 8:
+                    self.framey =8
+                else:
+                    self.framey = self.framey + 1

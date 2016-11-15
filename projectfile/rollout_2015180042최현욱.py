@@ -3,6 +3,7 @@ import Uishowcase
 from wall import wall
 from Weapon import Disk, WeapoN
 import math
+from EandO import Pc
 from hitdetection import collide
 #class definition here{
 
@@ -183,9 +184,12 @@ pl = player()
 ui=Uishowcase.UI()
 #####
 wl=wall()
+wl2=wall()
 wp=WeapoN()
 d=Disk()
+en=Pc()
 
+wl2.x=200
 running=True
 #게임 루프 구간
 while running:
@@ -196,7 +200,35 @@ while running:
     if d.blast==True and d.blasttime==1:
         if pl.x>d.x-100 and pl.x<wl.x+100:
             if pl.y>d.y-100 and pl.y<d.y+100:
-                pl.x+=2*(d.x-pl.x)
+                pl.x+=2*((800-pl.x)-(800-d.x))
+        if en.x>=d.x-100 and en.x<=d.x+100:
+            if en.y>=d.y-100 and en.y<=d.y+100:
+                en.x+=2*((800-en.x)-(800-d.x))
+                print('collide')
+
+    if pl.movecheck==True and pl.tick[4]>wl.x-10 and pl.tick[4]<wl.x+10 and pl.y<wl.y+52 and pl.y>wl.y-52:
+        pl.movecheck=False
+        pl.x-=20
+    elif pl.movecheck==True and pl.tick[6]>wl.x-10 and pl.tick[6]<wl.x+10 and pl.y<wl.y+52 and pl.y>wl.y-52:
+        pl.movecheck = False
+        pl.x += 20
+
+
+
+
+
+
+    if pl.x>en.x-50 :
+        if pl.x<en.x+50 :
+            if pl.y<=en.y+49 :
+                if pl.y>=en.y-49:
+                    en.state=1
+
+
+
+
+
+
 
     pl.update()
 
@@ -206,6 +238,7 @@ while running:
 
 
 
+    en.draw()
     wl.draw()
     ui.draw()
     pl.draw()
